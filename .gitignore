@@ -1,0 +1,22 @@
+# Local SDK, restored packages, and build output
+.sdk/
+.nuget/
+.dotnet-home/
+.build-appdata/
+packages/
+dist/
+**/bin/
+**/obj/
+
+# Downloaded archives and local executables
+*.zip
+*.exe
+*.pdb
+
+# Local settings, logs, and measurement output
+settings.json
+*.log
+*-pid.txt
+soak-*.txt
+ui-*.csv
+ui-*.txt
