@@ -1,0 +1,94 @@
+<Window x:Class="GameZh.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="GameZh · 游戏实时翻译" Width="660" Height="840" MinWidth="620" MinHeight="620"
+        WindowStartupLocation="CenterScreen" Background="#171B23" Foreground="#F5F7FA" FontFamily="Microsoft YaHei UI">
+    <Window.Resources>
+        <Style TargetType="Button"><Setter Property="Background" Value="#344251"/><Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/><Setter Property="Padding" Value="13,7"/>
+            <Setter Property="Margin" Value="0,0,8,0"/><Setter Property="Cursor" Value="Hand"/></Style>
+        <Style TargetType="TextBox"><Setter Property="Background" Value="#252C36"/><Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#4A5868"/><Setter Property="Padding" Value="6"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/></Style>
+        <Style TargetType="PasswordBox"><Setter Property="Background" Value="#252C36"/><Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#4A5868"/><Setter Property="Padding" Value="6"/></Style>
+        <Style TargetType="ComboBox"><Setter Property="Background" Value="#252C36"/><Setter Property="Foreground" Value="#17202A"/>
+            <Setter Property="Padding" Value="5"/></Style>
+        <Style TargetType="CheckBox"><Setter Property="Margin" Value="0,5,16,5"/></Style>
+    </Window.Resources>
+    <Grid Margin="18">
+        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Margin="0,0,0,10">
+            <TextBlock Text="GameZh  游戏实时翻译" FontSize="24" FontWeight="Bold" Foreground="#79D8C1"/>
+            <TextBlock x:Name="GuideText" Text="首次使用：选择 OCR 语言 → 配置并测试翻译服务 → 框选区域 → 开始翻译。" Foreground="#B9C7D3" Margin="0,5,0,0" TextWrapping="Wrap"/>
+        </StackPanel>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="① 屏幕文字" FontSize="16" FontWeight="Bold" Foreground="#79D8C1" Margin="0,8,0,8"/>
+                <WrapPanel Margin="0,0,0,7">
+                    <Button x:Name="PickButton" Content="框选区域" Click="Pick_Click"/>
+                    <Button Content="识别预览" Click="Preview_Click"/>
+                    <Button Content="手动识别" Click="Once_Click"/>
+                    <TextBlock x:Name="RegionText" VerticalAlignment="Center" Foreground="#C8D1DD" Margin="8,0,0,0"/>
+                </WrapPanel>
+                <WrapPanel Margin="0,0,0,12">
+                    <TextBlock Text="OCR 语言" Width="85" VerticalAlignment="Center"/>
+                    <ComboBox x:Name="LanguageBox" Width="170" SelectionChanged="Settings_Changed"/>
+                    <TextBlock Text="检查间隔 ms" Margin="18,0,8,0" VerticalAlignment="Center"/>
+                    <TextBox x:Name="IntervalBox" Width="75" Text="1000" LostFocus="Settings_Changed"/>
+                    <Button Content="刷新语言" Click="RefreshLanguages_Click" Margin="12,0,0,0"/>
+                </WrapPanel>
+                <TextBlock Text="② 翻译服务 · OpenAI 兼容接口" FontSize="16" FontWeight="Bold" Foreground="#79D8C1" Margin="0,8,0,8"/>
+                <Grid Margin="0,0,0,6"><Grid.ColumnDefinitions><ColumnDefinition Width="85"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="API 地址" VerticalAlignment="Center"/><TextBox x:Name="ApiUrlBox" Grid.Column="1" LostFocus="Settings_Changed"/>
+                </Grid>
+                <Grid Margin="0,0,0,6"><Grid.ColumnDefinitions><ColumnDefinition Width="85"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="API Key" VerticalAlignment="Center"/><PasswordBox x:Name="ApiKeyBox" Grid.Column="1" PasswordChanged="Settings_Changed"/>
+                </Grid>
+                <Grid Margin="0,0,0,6"><Grid.ColumnDefinitions><ColumnDefinition Width="85"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <TextBlock Text="模型名称" VerticalAlignment="Center"/><TextBox x:Name="ModelBox" Grid.Column="1" LostFocus="Settings_Changed"/>
+                </Grid>
+                <WrapPanel Margin="0,0,0,8">
+                    <TextBlock Text="超时 秒" Width="85" VerticalAlignment="Center"/><TextBox x:Name="TimeoutBox" Width="65" LostFocus="Settings_Changed"/>
+                    <TextBlock Text="温度" Margin="18,0,8,0" VerticalAlignment="Center"/><TextBox x:Name="TemperatureBox" Width="55" LostFocus="Settings_Changed"/>
+                    <TextBlock Text="最大输出 tokens" Margin="18,0,8,0" VerticalAlignment="Center"/><TextBox x:Name="MaxTokensBox" Width="70" LostFocus="Settings_Changed"/>
+                    <Button Content="测试连接" Click="TestConnection_Click" Margin="14,0,0,0"/>
+                </WrapPanel>
+                <TextBlock Text="EXE 可直接启动；在线翻译需要联网并配置自己的服务。API Key 仅保存在本机加密配置中。" Foreground="#AEBBC7" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                <TextBlock Text="③ 悬浮字幕" FontSize="16" FontWeight="Bold" Foreground="#79D8C1" Margin="0,8,0,8"/>
+                <WrapPanel Margin="0,0,0,4">
+                    <CheckBox x:Name="ClickThroughBox" Content="鼠标穿透" Checked="OverlaySetting_Changed" Unchecked="OverlaySetting_Changed"/>
+                    <CheckBox x:Name="ShowOriginalBox" Content="同时显示原文" Checked="OverlaySetting_Changed" Unchecked="OverlaySetting_Changed"/>
+                    <Button Content="显示/隐藏字幕" Click="ShowOverlay_Click"/>
+                </WrapPanel>
+                <WrapPanel Margin="0,0,0,6">
+                    <TextBlock Text="宽度" VerticalAlignment="Center"/><Slider x:Name="WidthSlider" Minimum="300" Maximum="1400" Width="125" ValueChanged="OverlaySetting_Changed" Margin="8,0,12,0"/>
+                    <TextBlock Text="透明度" VerticalAlignment="Center"/><Slider x:Name="OpacitySlider" Minimum="0.25" Maximum="1" Width="110" ValueChanged="OverlaySetting_Changed" Margin="8,0,12,0"/>
+                    <TextBlock Text="字号" VerticalAlignment="Center"/><Slider x:Name="FontSlider" Minimum="14" Maximum="48" Width="105" ValueChanged="OverlaySetting_Changed" Margin="8,0,0,0"/>
+                </WrapPanel>
+                <WrapPanel Margin="0,0,0,6">
+                    <TextBlock Text="字体颜色" Width="85" VerticalAlignment="Center"/><TextBox x:Name="ColorBox" Width="110" LostFocus="OverlaySetting_Changed"/>
+                    <TextBlock Text="例如 #FFFFFF；穿透时可按快捷键解锁" Margin="13,0,0,0" Foreground="#AEBBC7" VerticalAlignment="Center"/>
+                </WrapPanel>
+                <TextBlock Text="④ 全局快捷键（Ctrl+Shift+所选 F 键）" FontSize="16" FontWeight="Bold" Foreground="#79D8C1" Margin="0,8,0,8"/>
+                <WrapPanel Margin="0,0,0,10">
+                    <TextBlock Text="开始/暂停" VerticalAlignment="Center"/><ComboBox x:Name="ToggleHotkeyBox" Width="64" Margin="7,0,18,0" SelectionChanged="Hotkey_Changed"/>
+                    <TextBlock Text="框选" VerticalAlignment="Center"/><ComboBox x:Name="RegionHotkeyBox" Width="64" Margin="7,0,18,0" SelectionChanged="Hotkey_Changed"/>
+                    <TextBlock Text="退出穿透" VerticalAlignment="Center"/><ComboBox x:Name="UnlockHotkeyBox" Width="64" Margin="7,0,0,0" SelectionChanged="Hotkey_Changed"/>
+                </WrapPanel>
+                <WrapPanel Margin="0,7,0,10">
+                    <Button x:Name="StartButton" Content="开始翻译" Click="StartPause_Click" Background="#347E6D" FontWeight="Bold" Padding="22,9"/>
+                    <Button Content="保存设置" Click="Save_Click"/>
+                    <Button Content="退出程序" Click="Exit_Click"/>
+                </WrapPanel>
+                <TextBlock Text="识别原文" Foreground="#79D8C1" Margin="0,4,0,4"/>
+                <TextBox x:Name="OriginalBox" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" Height="60" VerticalScrollBarVisibility="Auto"/>
+                <TextBlock Text="简体中文" Foreground="#79D8C1" Margin="0,10,0,4"/>
+                <TextBox x:Name="TranslationBox" IsReadOnly="True" TextWrapping="Wrap" AcceptsReturn="True" Height="75" VerticalScrollBarVisibility="Auto"/>
+            </StackPanel>
+        </ScrollViewer>
+        <Border Grid.Row="2" Background="#28323D" Padding="10" Margin="0,10,0,0" CornerRadius="5">
+            <TextBlock x:Name="StatusText" Text="准备就绪" TextWrapping="Wrap" Foreground="#DCE7EF"/>
+        </Border>
+    </Grid>
+</Window>
